@@ -1,0 +1,83 @@
+
+<%= form_with model: @study_plan, class: "space-y-6" do |f| %>
+  <div>
+    <%= f.label :objective, "O que você deseja aprender?" %>
+    <p class="text-sm text-gray-500">
+      Descreva o assunto ou habilidade que deseja estudar.
+    </p>
+    <%= f.text_area :objective,
+        maxlength: StudyPlan::MAX_OBJECTIVE_LENGTH,
+        class: "w-full rounded-lg border p-3",
+        placeholder: "Ex.: Aprender Ruby on Rails..." %>
+    <p class="text-sm text-gray-500">
+      Máximo de <%= StudyPlan::MAX_OBJECTIVE_LENGTH %> caracteres.
+    </p>
+  </div>
+
+  <div>
+    <%= f.label :current_level, "Qual é seu nível de conhecimento?" %>
+    <p class="text-sm text-gray-500">
+      Selecione seu nível atual sobre o assunto.
+    </p>
+    <%= f.select :current_level,
+        StudyPlan::LEVELS.map { |level| [level.humanize, level] },
+        { prompt: "Selecione seu nível" },
+        { class: "w-full rounded-lg border p-3" } %>
+  </div>
+
+  <div>
+    <%= f.label :deadline, "Até quando deseja atingir seu objetivo?" %>
+    <p class="text-sm text-gray-500">
+      Escolha uma data entre amanhã e as próximas 12 semanas.
+    </p>
+    <%= f.date_field :deadline,
+        min: Date.tomorrow,
+        max: 12.weeks.from_now.to_date,
+        class: "w-full rounded-lg border p-3" %>
+  </div>
+
+  <div>
+    <%= f.label :daily_hours, "Quantas horas por dia você pode estudar?" %>
+    <p class="text-sm text-gray-500">
+      Informe sua disponibilidade diária.
+    </p>
+    <%= f.number_field :daily_hours,
+        min: 0.5,
+        max: 12,
+        step: 0.5,
+        class: "w-full rounded-lg border p-3",
+        placeholder: "Ex.: 2" %>
+  </div>
+
+  <div>
+    <%= f.label :available_days, "Quais dias você pode estudar?" %>
+    <p class="text-sm text-gray-500">
+      Selecione todos os dias disponíveis.
+    </p>
+
+    <%= f.collection_check_boxes :available_days,
+        StudyPlan::WEEKDAYS, :to_s, :humanize do |b| %>
+      <label class="flex items-center gap-2">
+        <%= b.check_box %>
+        <%= b.text %>
+      </label>
+    <% end %>
+  </div>
+
+  <div>
+    <%= f.label :goal, "Qual é sua meta de aprendizagem?" %>
+    <p class="text-sm text-gray-500">
+      Descreva o que espera conseguir ao final do plano.
+    </p>
+    <%= f.text_area :goal,
+        maxlength: StudyPlan::MAX_GOAL_LENGTH,
+        class: "w-full rounded-lg border p-3",
+        placeholder: "Ex.: Conseguir desenvolver uma aplicação..." %>
+    <p class="text-sm text-gray-500">
+      Máximo de <%= StudyPlan::MAX_GOAL_LENGTH %> caracteres.
+    </p>
+  </div>
+
+  <%= f.submit "Criar meu plano",
+      class: "rounded-lg bg-blue-600 px-6 py-3 font-semibold text-white" %>
+<% end %>
