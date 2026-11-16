@@ -1,1 +1,41 @@
 @import "tailwindcss";
+
+@theme {
+	--font-sans: "Figtree", ui-sans-serif, system-ui, sans-serif;
+	--font-serif: "Instrument Serif", ui-serif, Georgia, serif;
+	--color-paper: #FBF8F1;
+	--color-surface: #FFFFFF;
+	--color-ink: #1E1B4B;
+	--color-ink-2: #5A5780;
+	--color-label: #6B6890;
+	--color-line: #E6E1F2;
+	--color-line-strong: #D9D3EC;
+	--color-mark: #FFD84D;
+	--color-ai: #6C5CE7;
+	--color-danger: #B3261E;
+	--color-danger-bg: #FDECEA;
+	--color-info: #3B2F9E;
+	--color-info-bg: #EDEAFD;
+	--color-empty: #C9C5F0;
+}
+
+@layer base {
+	body { @apply bg-paper font-sans text-ink antialiased; }
+}
+
+@layer components {
+	.label { @apply block text-[11px] font-bold uppercase tracking-[.06em] text-label; }
+	.field { @apply block rounded-[18px] border-[1.5px] border-line bg-surface px-3.5 py-2.5 focus-within:outline-3 focus-within:outline-offset-2 focus-within:outline-ai; }
+	.field-error { @apply border-danger; }
+	.field-input { @apply w-full border-0 bg-transparent p-0 pt-0.5 text-[17px] font-bold text-ink outline-none placeholder:font-medium placeholder:text-label; }
+	.field-msg { @apply mt-1 text-xs font-semibold text-danger; }
+	.btn-primary { @apply inline-flex h-14 w-full items-center justify-center gap-2.5 rounded-full bg-ink px-6 text-[17px] font-extrabold text-mark focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-ai disabled:cursor-wait disabled:opacity-90; }
+	.btn-secondary { @apply inline-flex h-12 items-center justify-center rounded-full border-[1.5px] border-ink bg-surface px-6 text-[15px] font-extrabold text-ink focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-ai; }
+	.day-pill { @apply flex h-11 min-w-0 flex-1 cursor-pointer items-center justify-center rounded-full border-[1.5px] border-line-strong bg-surface text-[13px] font-bold text-ink peer-checked:border-ink peer-checked:bg-ink peer-checked:text-mark peer-focus-visible:outline-3 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-ai; }
+	.alert-danger { @apply rounded-[14px] bg-danger-bg px-3.5 py-2.5 text-sm font-semibold leading-snug text-danger; }
+	.alert-info { @apply rounded-[14px] bg-info-bg px-3.5 py-2.5 text-sm font-semibold leading-snug text-info; }
+	.chip { @apply rounded-[10px] bg-info-bg px-2.5 py-1 text-xs font-bold text-ink; }
+	.badge-time { @apply whitespace-nowrap rounded-[10px] bg-mark px-2 py-0.5 text-xs font-extrabold tabular-nums text-ink; }
+	.serif-em { @apply font-serif font-normal italic; }
+	.marker { background: linear-gradient(transparent 58%, var(--color-mark) 58%, var(--color-mark) 92%, transparent 92%); @apply px-1; }
+}

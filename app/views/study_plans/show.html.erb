@@ -1,0 +1,49 @@
+<% content_for :header_action do %>
+  <%= link_to "Criar novo plano", root_path, class: "btn-secondary" %>
+<% end %>
+
+<% days = StudyPlan::WEEKDAYS & @study_plan.available_days %>
+<% weeks = @study_plan.items_by_week %>
+
+<section class="rounded-3xl bg-ink p-[18px] text-white md:rounded-none md:bg-transparent md:p-0 md:text-ink">
+  <p class="text-[11px] font-bold uppercase tracking-[.06em] text-empty md:text-label">Plano de estudos</p>
+  <h1 class="mt-2 text-[26px] font-extrabold leading-[1.1] md:text-[56px]">
+    <%= @study_plan.title.presence || "Seu plano de estudos" %>
+  </h1>
+  <ul class="mt-3 flex flex-wrap gap-1.5 md:mt-5 md:gap-2">
+    <li class="chip"><%= level_label(@study_plan.current_level) %></li>
+    <li class="chip"><%= format_duration((@study_plan.daily_hours * 60).to_i) %>/dia</li>
+    <li class="chip">até <%= l(@study_plan.deadline) %></li>
+    <li class="chip"><%= days.map { |day| weekday_short(day) }.join(" ") %></li>
+  </ul>
+  <p class="mt-3 text-[13px] text-empty md:text-ink-2">
+    <span class="font-bold">Objetivo:</span> <%= @study_plan.objective %>
+    · <span class="font-bold">Meta:</span> <%= @study_plan.goal %>
+  </p>
+</section>
+
+<% if weeks.empty? %>
+  <p class="alert-info mt-4">Os itens de estudo ainda serão adicionados ao plano.</p>
+<% else %>
+  <div class="mt-6 space-y-4">
+    <% weeks.each do |week, items| %>
+      <section>
+        <h2 class="mb-2 text-lg font-extrabold">Semana <%= week %></h2>
+        <div class="grid gap-2 md:grid-cols-2">
+          <% items.each do |item| %>
+            <article class="rounded-2xl border-[1.5px] border-line bg-surface px-3 py-2.5">
+              <div class="flex items-start justify-between gap-2">
+                <div>
+                  <p class="label"><%= weekday_label(item.day) %></p>
+                  <h3 class="text-base font-extrabold"><%= item.topic %></h3>
+                </div>
+                <span class="badge-time"><%= format_duration(item.duration_minutes) %></span>
+              </div>
+              <p class="mt-1 text-[13px] text-ink-2"><%= item.activity %></p>
+            </article>
+          <% end %>
+        </div>
+      </section>
+    <% end %>
+  </div>
+<% end %>

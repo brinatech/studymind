@@ -1,12 +1,13 @@
-<div class="mx-auto max-w-2xl px-6 py-12">
-  <h1 class="text-3xl font-bold">
-    StudyMind
+<% content_for :header_action do %>
+  <span class="label">sem login</span>
+<% end %>
+
+<section class="mx-auto w-full max-w-md">
+  <h1 class="mt-3 text-[40px] font-extrabold leading-[1.05]">
+    O que você quer <span class="serif-em marker text-[52px]">aprender</span>?
   </h1>
-
-  <p class="mt-3 text-gray-600">
-    Crie um plano de estudos personalizado com inteligência artificial,
-    de acordo com seus objetivos, nível de conhecimento e disponibilidade.
+  <p class="mb-4 mt-2 text-[15px] leading-snug text-ink-2">
+    Conte sua rotina. A IA monta um plano por semana e dia.
   </p>
-
-  <%= render "form" %>
-</div>
+  <%= render "form", study_plan: @study_plan %>
+</section>

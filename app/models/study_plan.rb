@@ -12,7 +12,7 @@ has_many :study_plan_items, dependent: :destroy
   validates :daily_hours, presence: true, on: :input
   validates :available_days, presence: true, on: :input
   validates :goal, presence: true, on: :input
-  validates :title, presence: true, length: { maximum: MAX_TITLE_LENGTH }
+  validates :title, presence: true, length: { maximum: MAX_TITLE_LENGTH }, on: :generation
   validates :objective, length: { maximum: MAX_OBJECTIVE_LENGTH }, on: :input
   validates :goal, length: { maximum: MAX_GOAL_LENGTH }, on: :input
   validates :current_level, presence: true, inclusion: { in: LEVELS }, on: :input
@@ -20,7 +20,7 @@ has_many :study_plan_items, dependent: :destroy
   on: :input
   validate :validate_available_days, on: :input
   validate :validate_deadline, on: :input
-  validate :must_have_items
+  validate :must_have_items, on: :generation
   normalizes :objective, :goal, with: ->(v) { v.strip }
 
   def validate_available_days
@@ -62,8 +62,8 @@ invalid_days = available_days - WEEKDAYS
   end
 
   def items_by_week
-   study_plan_items.to_a.sort_by do |item|
-    [ item.week, WEEKDAYS.index(item.day), item.id ]
+    study_plan_items.to_a.sort_by do |item|
+      [ item.week, WEEKDAYS.index(item.day), item.id ]
+    end.group_by(&:week)
   end
-end
 end
