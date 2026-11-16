@@ -7,6 +7,7 @@ has_many :study_plan_items, dependent: :destroy
   MAX_TITLE_LENGTH = 120
   MAX_DAILY_HOURS = 12
   MAX_WEEKS = 12
+  MAX_ITEMS = 120
   validates :objective, presence: true, on: :input
   validates :deadline, presence: true, on: :input
   validates :daily_hours, presence: true, on: :input

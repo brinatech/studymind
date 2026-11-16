@@ -3,6 +3,10 @@ require "test_helper"
 class StudyPlansControllerTest < ActionDispatch::IntegrationTest
   self.fixture_table_names = []
 
+  setup do
+    Rails.cache.clear
+  end
+
   test "generates, saves and redirects to the study plan" do
     result = {
       title: "Plano de SQL",
@@ -71,6 +75,32 @@ class StudyPlansControllerTest < ActionDispatch::IntegrationTest
     assert_response :service_unavailable
     assert_equal "Não foi possível gerar seu plano agora. Tente novamente em instantes.", flash[:alert]
     refute_includes response.body, error.message
+  end
+
+  test "blocks the sixth generation before calling the generator" do
+    result = {
+      title: "Plano de SQL",
+      items: [
+        { week: 1, day: "Segunda-feira", topic: "SELECT", duration_minutes: 60, activity: "Praticar consultas" }
+      ]
+    }
+    calls = 0
+    original = AI::StudyPlanGenerator.method(:call)
+    AI::StudyPlanGenerator.define_singleton_method(:call) do |*args, **kwargs|
+      calls += 1
+      result
+    end
+
+    5.times { post study_plans_path, params: valid_params }
+    post study_plans_path, params: valid_params
+
+    assert_response :too_many_requests
+    assert_equal 5, calls
+    assert_equal "Você atingiu o limite de 5 planos por dia. Volte amanhã.", flash[:alert]
+  ensure
+    AI::StudyPlanGenerator.define_singleton_method(:call) do |*args, **kwargs|
+      original.call(*args, **kwargs)
+    end
   end
 
   test "renders a friendly page when a study plan does not exist" do

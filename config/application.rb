@@ -13,6 +13,7 @@ module Studymind
     config.i18n.default_locale = :'pt-BR'
     config.x.gemini.api_key = ENV["GEMINI_API_KEY"]
     config.x.gemini.model = ENV.fetch("GEMINI_MODEL", "gemini-2.5-flash")
+    config.x.study_mind.daily_limit = ENV.fetch("STUDYMIND_DAILY_LIMIT", "5").to_i
 
     # Please, add to the `ignore` list any other `lib` subdirectories that do
     # not contain `.rb` files, or that should not be reloaded or eager loaded.

@@ -16,12 +16,19 @@ class StudyPlansController < ApplicationController
 
     if @study_plan.valid?(:input)
       begin
+        daily_limit = Rails.configuration.x.study_mind.daily_limit
+        GenerationLimiter.new(ip: request.remote_ip, limit: daily_limit).check!
+
         result = AI::StudyPlanGenerator.call(@study_plan)
         @study_plan.title = result[:title]
         result[:items].each { |item| @study_plan.study_plan_items.build(item) }
         @study_plan.save!(context: :generation)
 
         redirect_to study_plan_path(@study_plan), status: :see_other, notice: "Plano gerado com sucesso!"
+      rescue GenerationLimiter::LimitExceeded
+        daily_limit = Rails.configuration.x.study_mind.daily_limit
+        flash.now[:alert] = "Você atingiu o limite de #{daily_limit} planos por dia. Volte amanhã."
+        render :new, status: :too_many_requests
       rescue AI::Errors::Base, ActiveRecord::RecordInvalid => error
         handle_generation_error(error)
       rescue StandardError => error

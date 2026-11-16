@@ -23,7 +23,7 @@ module AI
       end
 
       raise_invalid("plan must contain at least one topic") if @items.empty?
-      raise_invalid("too many topics") if @items.size > StudyPlanGenerator::MAX_ITEMS
+      raise_invalid("too many topics") if @items.size > StudyPlan::MAX_ITEMS
       validate_daily_limits
 
       { title: title, items: @items }
