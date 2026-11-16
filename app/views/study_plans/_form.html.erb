@@ -42,7 +42,7 @@
     <legend class="label mb-1.5 mt-1"><%= StudyPlan.human_attribute_name(:available_days) %></legend>
     <div class="flex gap-1.5">
       <%= f.collection_check_boxes :available_days, StudyPlan::WEEKDAYS, :itself, ->(day) { weekday_short(day) } do |b| %>
-          <span class="relative min-w-0 flex-1">
+          <span class="relative flex min-w-0 flex-1">
             <%= b.check_box class: "peer sr-only" %>
             <%= b.label(class: "day-pill w-full") { b.text } %>
           </span>

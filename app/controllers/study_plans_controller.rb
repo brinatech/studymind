@@ -20,13 +20,17 @@ class StudyPlansController < ApplicationController
   private
 
   def study_plan_params
-    params.require(:study_plan).permit(
-      :objective,
-      :current_level,
-      :deadline,
-      :daily_hours,
-      :goal,
-      available_days: []
-    ).compact_blank
-  end
+  permitted = params.require(:study_plan).permit(
+    :objective,
+    :current_level,
+    :deadline,
+    :daily_hours,
+    :goal,
+    available_days: []
+  )
+
+  permitted[:available_days] = permitted[:available_days].compact_blank
+
+  permitted
+end
 end
