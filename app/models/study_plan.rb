@@ -1,6 +1,6 @@
 class StudyPlan < ApplicationRecord
-has_many :study_plan_items
-  WEEKDAYS = [ "Segunda-feira", "Terça-feira", "Quarta-feira", "Quinta-feira", "Sexta-feira", "Sábado", "Domingo" ].freeze
+has_many :study_plan_items, dependent: :destroy
+  WEEKDAYS = [ "Domingo", "Segunda-feira", "Terça-feira", "Quarta-feira", "Quinta-feira", "Sexta-feira", "Sábado" ].freeze
   LEVELS = [ "Iniciante", "Intermediário", "Avançado" ].freeze
   MAX_OBJECTIVE_LENGTH = 300
   MAX_GOAL_LENGTH = 300
@@ -60,4 +60,10 @@ invalid_days = available_days - WEEKDAYS
   def weeks_available
     ((deadline - Date.current)/7.0).ceil.clamp(0, MAX_WEEKS)
   end
+
+  def items_by_week
+   study_plan_items.to_a.sort_by do |item|
+    [ item.week, WEEKDAYS.index(item.day), item.id ]
+  end
+end
 end

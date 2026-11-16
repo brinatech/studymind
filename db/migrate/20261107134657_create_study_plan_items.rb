@@ -10,6 +10,6 @@ class CreateStudyPlanItems < ActiveRecord::Migration[8.1]
       t.timestamps
     end
   add_check_constraint :study_plan_items, "week > 0", name: "study_plan_items_week_positive"
-  add_check_constraint :study_plan_items, "duration_minutes > 0", name: tudy_plan_items_duration_positive
+  add_check_constraint :study_plan_items, "duration_minutes > 0", name: "study_plan_items_duration_positive"
   end
 end
