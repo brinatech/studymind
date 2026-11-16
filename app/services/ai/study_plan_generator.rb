@@ -61,7 +61,7 @@ module AI
     def call(study_plan)
       started_at = Process.clock_gettime(Process::CLOCK_MONOTONIC)
       parsed_response = generate(study_plan)
-      result = StudyPlanResponseValidator.validate!(parsed_response, study_plan: study_plan)
+      result = StudyPlanResponseValidator.validate!(parsed_response, study_plan)
       log_execution(started_at, "success")
       result
     rescue StandardError => error

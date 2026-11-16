@@ -7,11 +7,23 @@ class StudyPlansController < ApplicationController
     @study_plan = StudyPlan.new(study_plan_params)
 
     if @study_plan.valid?(:input)
-      render :new
+      begin
+        result = AI::StudyPlanGenerator.call(@study_plan)
+        @study_plan.title = result[:title]
+        result[:items].each { |item| @study_plan.study_plan_items.build(item) }
+        @study_plan.save!(context: :generation)
+
+        redirect_to study_plan_path(@study_plan), status: :see_other, notice: "Plano gerado com sucesso!"
+      rescue AI::Errors::Base, ActiveRecord::RecordInvalid => error
+        Rails.logger.warn("Study plan persistence failed result=#{error.class.name}")
+        flash.now[:alert] = "Não foi possível gerar o plano agora. Tente novamente."
+        render :new, status: :unprocessable_entity
+      end
     else
       render :new, status: :unprocessable_entity
     end
   end
+
 
   def show
     @study_plan = StudyPlan.find(params[:id])

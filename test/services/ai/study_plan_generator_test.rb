@@ -84,6 +84,37 @@ class AI::StudyPlanGeneratorTest < ActiveSupport::TestCase
     end
   end
 
+  test "normalizes text and day values before returning items" do
+    response = {
+      title: "  Plano  ",
+      weeks: [
+        {
+          week: 1,
+          topics: [
+            { day: " segunda-feira ", topic: "  SELECT  ", duration_minutes: 60, activity: "  Praticar  " }
+          ]
+        }
+      ]
+    }
+
+    result = AI::StudyPlanGenerator.call(build_study_plan, client: FakeClient.new(JSON.generate(response)))
+
+    assert_equal "Plano", result[:title]
+    assert_equal "Segunda-feira", result[:items].first[:day]
+    assert_equal "SELECT", result[:items].first[:topic]
+    assert_equal "Praticar", result[:items].first[:activity]
+  end
+
+  test "reports the path of missing topic fields" do
+    response = { title: "Plano", weeks: [ { week: 1, topics: [ { topic: "SELECT" } ] } ] }
+
+    error = assert_raises(AI::Errors::InvalidResponseError) do
+      AI::StudyPlanGenerator.call(build_study_plan, client: FakeClient.new(JSON.generate(response)))
+    end
+
+    assert_includes error.message, "weeks[0].topics[0].day"
+  end
+
   test "converts invalid JSON into an invalid response error" do
     client = FakeClient.new("not-json")
 
