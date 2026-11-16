@@ -1,4 +1,12 @@
 class StudyPlansController < ApplicationController
+  GENERATION_ERROR_MESSAGES = {
+    AI::Errors::ConfigurationError => "O serviço de geração está indisponível no momento. Tente novamente mais tarde.",
+    AI::Errors::RateLimitError => "O serviço de IA está com muitas solicitações. Aguarde alguns minutos e tente de novo.",
+    AI::Errors::ApiError => "Não foi possível gerar seu plano agora. Tente novamente em instantes.",
+    AI::Errors::InvalidResponseError => "Não conseguimos gerar um plano válido desta vez. Tente novamente.",
+    ActiveRecord::RecordInvalid => "Não conseguimos gerar um plano válido desta vez. Tente novamente."
+  }.freeze
+
   def new
     @study_plan = StudyPlan.new
   end
@@ -15,9 +23,9 @@ class StudyPlansController < ApplicationController
 
         redirect_to study_plan_path(@study_plan), status: :see_other, notice: "Plano gerado com sucesso!"
       rescue AI::Errors::Base, ActiveRecord::RecordInvalid => error
-        Rails.logger.warn("Study plan persistence failed result=#{error.class.name}")
-        flash.now[:alert] = "Não foi possível gerar o plano agora. Tente novamente."
-        render :new, status: :unprocessable_entity
+        handle_generation_error(error)
+      rescue StandardError => error
+        handle_generation_error(error)
       end
     else
       render :new, status: :unprocessable_entity
@@ -30,6 +38,19 @@ class StudyPlansController < ApplicationController
   end
 
   private
+
+  def handle_generation_error(error)
+    backtrace = Array(error.backtrace).first(10).join("\n")
+    Rails.logger.error("Study plan generation failed error=#{error.class.name} message=#{safe_error_message(error)}\n#{backtrace}")
+    flash.now[:alert] = GENERATION_ERROR_MESSAGES.fetch(error.class, GENERATION_ERROR_MESSAGES[AI::Errors::ApiError])
+    render :new, status: :service_unavailable
+  end
+
+  def safe_error_message(error)
+    message = error.message.to_s
+    api_key = Rails.configuration.x.gemini.api_key.to_s
+    api_key.empty? ? message : message.gsub(api_key, "[REDACTED]")
+  end
 
   def study_plan_params
   permitted = params.require(:study_plan).permit(

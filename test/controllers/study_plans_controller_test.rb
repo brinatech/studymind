@@ -36,9 +36,49 @@ class StudyPlansControllerTest < ActionDispatch::IntegrationTest
       post study_plans_path, params: valid_params
     end
 
-    assert_response :unprocessable_entity
+    assert_response :service_unavailable
     assert_equal plans_before, StudyPlan.count
-    assert_equal "Não foi possível gerar o plano agora. Tente novamente.", flash[:alert]
+    assert_equal "Não conseguimos gerar um plano válido desta vez. Tente novamente.", flash[:alert]
+  end
+
+  test "shows a safe message for each generation error" do
+    errors = {
+      AI::Errors::ConfigurationError.new("secret key rejected") => "O serviço de geração está indisponível no momento. Tente novamente mais tarde.",
+      AI::Errors::RateLimitError.new("429 response") => "O serviço de IA está com muitas solicitações. Aguarde alguns minutos e tente de novo.",
+      AI::Errors::ApiError.new("provider details") => "Não foi possível gerar seu plano agora. Tente novamente em instantes.",
+      AI::Errors::InvalidResponseError.new("raw provider response") => "Não conseguimos gerar um plano válido desta vez. Tente novamente.",
+      ActiveRecord::RecordInvalid.new(StudyPlan.new) => "Não conseguimos gerar um plano válido desta vez. Tente novamente."
+    }
+
+    errors.each do |error, message|
+      with_generator_error(error) do
+        post study_plans_path, params: valid_params
+      end
+
+      assert_response :service_unavailable
+      assert_equal message, flash[:alert]
+      refute_includes response.body, error.message
+    end
+  end
+
+  test "uses the generic API message for unexpected generation errors" do
+    error = StandardError.new("internal implementation detail")
+
+    with_generator_error(error) do
+      post study_plans_path, params: valid_params
+    end
+
+    assert_response :service_unavailable
+    assert_equal "Não foi possível gerar seu plano agora. Tente novamente em instantes.", flash[:alert]
+    refute_includes response.body, error.message
+  end
+
+  test "renders a friendly page when a study plan does not exist" do
+    get study_plan_path(-1)
+
+    assert_response :not_found
+    assert_includes response.body, "Essa página não foi encontrada."
+    assert_includes response.body, "Voltar para o StudyMind"
   end
 
   test "shows the plan summary and items grouped by week and day" do
