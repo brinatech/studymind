@@ -1,0 +1,23 @@
+pt-BR:
+  date:
+    formats:
+      default: "%d/%m/%Y"
+  helpers:
+    submit:
+      create: "Gerar plano"
+  activerecord:
+    attributes:
+      study_plan:
+        objective: "O que você quer aprender?"
+        current_level: "Nível atual"
+        deadline: "Prazo"
+        daily_hours: "Horas por dia"
+        available_days: "Dias disponíveis"
+        goal: "Meta de aprendizagem"
+        title: "Título"
+      study_plan_item:
+        week: "Semana"
+        day: "Dia"
+        topic: "Tópico"
+        duration_minutes: "Duração"
+        activity: "Atividade"

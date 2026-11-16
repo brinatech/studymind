@@ -1,0 +1,13 @@
+<% content_for :header_action do %>
+  <span class="label">sem login</span>
+<% end %>
+
+<section class="mx-auto w-full max-w-md">
+  <h1 class="mt-3 text-[40px] font-extrabold leading-[1.05]">
+    O que você quer <span class="serif-em marker text-[52px]">aprender</span>?
+  </h1>
+  <p class="mb-4 mt-2 text-[15px] leading-snug text-ink-2">
+    Conte sua rotina. A IA monta um plano por semana e dia.
+  </p>
+  <%= render "form", study_plan: @study_plan %>
+</section>
