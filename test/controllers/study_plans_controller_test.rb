@@ -41,6 +41,45 @@ class StudyPlansControllerTest < ActionDispatch::IntegrationTest
     assert_equal "Não foi possível gerar o plano agora. Tente novamente.", flash[:alert]
   end
 
+  test "shows the plan summary and items grouped by week and day" do
+    study_plan = StudyPlan.create!(
+      title: "Plano de SQL",
+      objective: "aprender SQL",
+      current_level: "Iniciante",
+      deadline: Date.current + 7.days,
+      daily_hours: 1,
+      available_days: [ "Segunda-feira", "Quinta-feira" ],
+      goal: "escrever consultas"
+    )
+    study_plan.study_plan_items.create!(
+      week: 1,
+      day: "Quinta-feira",
+      topic: "JOIN",
+      duration_minutes: 30,
+      activity: "Resolver exercícios"
+    )
+    study_plan.study_plan_items.create!(
+      week: 1,
+      day: "Segunda-feira",
+      topic: "SELECT",
+      duration_minutes: 60,
+      activity: "Praticar consultas"
+    )
+
+    get study_plan_path(study_plan)
+
+    assert_response :success
+    assert_select "h1", "Plano de SQL"
+    assert_select "a", text: "Criar novo plano", href: root_path
+    assert_select "p", text: /Objetivo:.*aprender SQL.*Meta:.*escrever consultas/
+    assert_select "h2", "Semana 1"
+    assert_select "h3", "SELECT"
+    assert_select "h3", "JOIN"
+    assert_select "p", text: "Segunda-feira"
+    assert_select "span", text: "1h"
+    assert_select "span", text: "30 min"
+  end
+
   private
 
   def valid_params

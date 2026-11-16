@@ -26,7 +26,7 @@ class StudyPlansController < ApplicationController
 
 
   def show
-    @study_plan = StudyPlan.find(params[:id])
+    @study_plan = StudyPlan.includes(:study_plan_items).find(params[:id])
   end
 
   private
