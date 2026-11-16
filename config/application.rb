@@ -11,6 +11,8 @@ module Studymind
     # Initialize configuration defaults for originally generated Rails version.
     config.load_defaults 8.1
     config.i18n.default_locale = :'pt-BR'
+    config.x.gemini.api_key = ENV["GEMINI_API_KEY"]
+    config.x.gemini.model = ENV.fetch("GEMINI_MODEL", "gemini-2.5-flash")
 
     # Please, add to the `ignore` list any other `lib` subdirectories that do
     # not contain `.rb` files, or that should not be reloaded or eager loaded.

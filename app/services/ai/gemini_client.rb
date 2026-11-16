@@ -8,6 +8,8 @@ module AI
     API_PATH = "/v1beta/models"
     OPEN_TIMEOUT = 5
     READ_TIMEOUT = 30
+    TEMPERATURE = 0.4
+    MAX_OUTPUT_TOKENS = 8192
     LOG_BODY_LIMIT = 200
 
     def initialize(api_key: ENV["GEMINI_API_KEY"], model:)
@@ -53,7 +55,9 @@ module AI
         ],
         generationConfig: {
           responseMimeType: "application/json",
-          responseSchema: response_schema
+          responseSchema: response_schema,
+          temperature: TEMPERATURE,
+          maxOutputTokens: MAX_OUTPUT_TOKENS
         }
       }
     end

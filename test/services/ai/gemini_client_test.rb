@@ -39,6 +39,8 @@ class AI::GeminiClientTest < ActiveSupport::TestCase
     assert_equal({ "role" => "user", "parts" => [ { "text" => "Answer this" } ] }, body["contents"].first)
     assert_equal "application/json", body.dig("generationConfig", "responseMimeType")
     assert_equal JSON.parse(JSON.generate(SCHEMA)), body.dig("generationConfig", "responseSchema")
+    assert_equal 0.4, body.dig("generationConfig", "temperature")
+    assert_equal 8192, body.dig("generationConfig", "maxOutputTokens")
   end
 
   test "uses the configured HTTP timeouts" do
